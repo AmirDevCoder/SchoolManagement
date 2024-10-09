@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 // todo: supporting for SuppressException
@@ -32,8 +33,8 @@ public final class ResultWrapper<T> {
         return new ResultWrapper<>(null, Err.of(operation, error, metaDate));
     }
 
-    public boolean isError() {
-        return error != null;
+    public boolean isSuccess() {
+        return error == null;
     }
 
     public T getValue() {
@@ -41,17 +42,17 @@ public final class ResultWrapper<T> {
     }
 
     public String getError() {
-        return error.toString();
+        return (!isSuccess()) ? error.toString() : "null";
     }
 
     public void ifPresent(Consumer<T> consumer) {
-        if (!isError()) {
+        if (isSuccess()) {
             consumer.accept(value);
         }
     }
 
     public void ifPresentOrElse(Consumer<T> consumer, Runnable runnable) {
-        if (!isError()) {
+        if (isSuccess()) {
             consumer.accept(value);
         } else {
             runnable.run();
@@ -73,6 +74,15 @@ public final class ResultWrapper<T> {
             return this.value;
         } else {
             throw (X) exceptionSupplier.get();
+        }
+    }
+
+    public <U> ResultWrapper<U> map(Function<? super T, ? extends U> mapper) {
+        if (this.isSuccess()) {
+            U newValue = mapper.apply(getValue());
+            return ResultWrapper.ok(newValue);
+        } else {
+            return ResultWrapper.err(getClass().getSimpleName().concat(".map"), getError());
         }
     }
 
@@ -101,7 +111,7 @@ public final class ResultWrapper<T> {
 
     @Override
     public String toString() {
-        if (isError()) return getError();
+        if (!isSuccess()) return getError();
         else return (getValue() != null) ? getValue().toString() : "null";
     }
 }
