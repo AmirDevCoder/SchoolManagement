@@ -1,0 +1,14 @@
+package domain.model.entity;
+
+public enum LogsAction {
+    TEACHER_REGISTERED,
+    TEACHER_REMOVED,
+    STUDENT_REGISTERED,
+    STUDENT_REMOVED,
+    COURSE_ADDED,
+    COURSE_REMOVED,
+    EXAM_ADDED,
+    EXAM_REMOVED,
+    BACKOFFICE_ADDED,
+    BACKOFFICE_REMOVED,
+}
