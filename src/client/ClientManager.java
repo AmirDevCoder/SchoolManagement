@@ -73,6 +73,16 @@ public final class ClientManager {
         return this;
     }
 
+    public ClientManager findStudentByTeacherId(int teacherId) {
+        results.add(studentSvc.findByTeacherId(teacherId));
+        return this;
+    }
+
+    public ClientManager findStudentCount() {
+        results.add(studentSvc.getCount());
+        return this;
+    }
+
     public ClientManager upsertStudent(StudentDto.Request req) {
         results.add(studentSvc.save(req));
         return this;
