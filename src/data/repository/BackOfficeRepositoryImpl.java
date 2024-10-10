@@ -19,7 +19,7 @@ public class BackOfficeRepositoryImpl implements BackOfficeRepository {
     public ResultWrapper<BackOffice> save(BackOffice backOffice) {
         try {
             var res = collection.insertOne(backOffice);
-            backOffice.setId(Objects.requireNonNull(res.getInsertedId()).asDBPointer().getId());
+            backOffice.setId(Objects.requireNonNull(res.getInsertedId()).asObjectId().getValue());
             return ResultWrapper.ok(backOffice);
         } catch (Exception e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), e.getMessage());
