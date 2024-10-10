@@ -1,5 +1,6 @@
 package client;
 
+import domain.model.dto.BackOfficeDto;
 import domain.model.dto.CourseDto;
 import domain.model.dto.StudentDto;
 import domain.model.dto.TeacherDto;
@@ -11,18 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ClientManager {
+    private final static List<ResultWrapper<?>> results = new ArrayList<>();
     private final static StudentService studentSvc = ServiceLocator.getService(StudentService.class);
     private final static TeacherService teacherSvc = ServiceLocator.getService(TeacherService.class);
     private final static CourseService courseSvc = ServiceLocator.getService(CourseService.class);
     private final static ExamService examSvc = ServiceLocator.getService(ExamService.class);
     private final static GradeService gradeSvc = ServiceLocator.getService(GradeService.class);
     private final static BackOfficeService backOfficeSvc = ServiceLocator.getService(BackOfficeService.class);
-    private final static List<ResultWrapper<?>> results = new ArrayList<>();
 
     private ClientManager() {
     }
 
-    // semi builder-design pattern
+    // semi builder design-pattern
     public static ClientManager builder() {
         return new ClientManager();
     }
@@ -64,6 +65,20 @@ public final class ClientManager {
 
     public ClientManager upsertStudent(StudentDto.Request req) {
         results.add(studentSvc.save(req));
+        return this;
+    }
+
+    public ClientManager insertBackOffice() {
+        results.add(backOfficeSvc.save(new BackOfficeDto.Request(
+            UserGenerator.getName(),
+                UserGenerator.getFamily(),
+                UserGenerator.getAge(),
+                UserGenerator.getNationalId(),
+                BackOfficeGenerator.getRole(),
+                BackOfficeGenerator.getPermissions(),
+                BackOfficeGenerator.getContact()
+        )));
+
         return this;
     }
 
