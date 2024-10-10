@@ -3,6 +3,7 @@ package client;
 import java.sql.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 class UserGenerator {
@@ -25,7 +26,8 @@ class UserGenerator {
     }
 
     public static String getEmails() {
-        return getName().toLowerCase() + "." + getFamily().toLowerCase() + "@example.com";
+        String prefix = UUID.randomUUID().toString();
+        return prefix + "." + getName().toLowerCase() + "@example.com";
     }
 
     public static String getNationalId() {
