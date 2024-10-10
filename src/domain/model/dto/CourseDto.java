@@ -11,7 +11,7 @@ public interface CourseDto {
         public Request {
             List<String> errors = new ArrayList<>();
 
-            if (name.isBlank() || name.isEmpty()) {
+            if (name == null || name.isBlank()) {
                 errors.add("Name cannot be blank or empty");
             }
             if (teacherId < 0) {

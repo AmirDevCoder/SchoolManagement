@@ -12,19 +12,19 @@ public interface BackOfficeDto {
         public Request {
             List<String> errors = new ArrayList<>();
 
-            if (firstName.isEmpty() || firstName.isBlank()) {
+            if (firstName == null || firstName.isBlank()) {
                 errors.add("firstName is blank");
             }
-            if (lastName.isEmpty() || lastName.isBlank()) {
+            if (lastName == null || lastName.isBlank()) {
                 errors.add("lastName is blank");
             }
             if (age < 18) {
                 errors.add("age is less than 18");
             }
-            if (nationalId.isEmpty() || nationalId.isBlank()) {
+            if (nationalId == null || nationalId.isBlank()) {
                 errors.add("nationalId is blank");
             }
-            if (role.isEmpty() || role.isBlank()) {
+            if (role == null || role.isBlank()) {
                 errors.add("role is blank");
             }
             if (permissions.isEmpty()) {
@@ -33,10 +33,10 @@ public interface BackOfficeDto {
             if (contact == null) {
                 errors.add("contact is blank");
             } else {
-                if (contact.getEmail().isEmpty() || contact.getEmail().isBlank()) {
+                if (contact.getEmail() == null || contact.getEmail().isBlank()) {
                     errors.add("contact email is blank");
                 }
-                if (contact.getPhone().isEmpty() || contact.getPhone().isBlank()) {
+                if (contact.getPhone() == null || contact.getPhone().isBlank()) {
                     errors.add("contact phone is blank");
                 }
             }

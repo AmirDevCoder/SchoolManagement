@@ -11,7 +11,7 @@ public interface ExamDto {
         public Request {
             List<String> errors = new ArrayList<>();
 
-            if (name.isEmpty() || name.isBlank()) {
+            if (name == null || name.isBlank()) {
                 errors.add("name can not be empty or null");
             }
             if (courseId < 0) {

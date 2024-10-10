@@ -18,13 +18,13 @@ public interface TeacherDto {
                 errors.add("Last name cannot be null or blank");
             }
             //!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")
-            if (email == null) {
+            if (email == null || email.isBlank()) {
                 errors.add("Invalid email address");
             }
             if (dob == null) {
                 errors.add("Date of birth cannot be null");
             }
-            if (nationalId == null || nationalId.length() < 10) {
+            if (nationalId == null || nationalId.isBlank() || nationalId.length() < 10) {
                 errors.add("National ID must be at least 10 characters long");
             }
 
