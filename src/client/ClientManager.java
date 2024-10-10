@@ -40,6 +40,16 @@ public final class ClientManager {
         return this;
     }
 
+    public ClientManager deleteStudent(String nationalId) {
+        results.add(studentSvc.delete(nationalId));
+        return this;
+    }
+
+    public ClientManager fetchStudents() {
+        results.add(studentSvc.getAll());
+        return this;
+    }
+
     public ClientManager upsertCourse(int teacherId) {
         results.add(courseSvc.save(new CourseDto.Request(
                 CourseGenerator.getName(),
@@ -70,7 +80,7 @@ public final class ClientManager {
 
     public ClientManager insertBackOffice() {
         results.add(backOfficeSvc.save(new BackOfficeDto.Request(
-            UserGenerator.getName(),
+                UserGenerator.getName(),
                 UserGenerator.getFamily(),
                 UserGenerator.getAge(),
                 UserGenerator.getNationalId(),
