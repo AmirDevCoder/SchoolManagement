@@ -102,6 +102,16 @@ public final class ClientManager {
         return this;
     }
 
+    public ClientManager fetchBackOffices() {
+        results.add(backOfficeSvc.getAll());
+        return this;
+    }
+
+    public ClientManager deleteBackOffice(String nationalId) {
+        results.add(backOfficeSvc.delete(nationalId));
+        return this;
+    }
+
     public List<ResultWrapper<?>> build() {
         return results;
     }
