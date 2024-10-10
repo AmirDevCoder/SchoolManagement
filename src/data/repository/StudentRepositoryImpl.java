@@ -41,6 +41,7 @@ public class StudentRepositoryImpl implements StudentRepository {
             }
 
             if (!currentStudentCoursesIds.getValue().isEmpty()) {
+                // todo: instead of removing all old data, check one-by-one and update new rows
                 var removeCurrentStudentCourse = removeStudentCourseByStudentId(student.getId(), currentStudentCoursesIds.getValue());
                 if (!removeCurrentStudentCourse.isSuccess()) {
                     connection.rollback();
@@ -167,8 +168,9 @@ public class StudentRepositoryImpl implements StudentRepository {
         String placeHolder = String.join(",", courseIds.stream().map((id) -> "?").toArray(String[]::new));
         String query = "DELETE FROM enrollments WHERE student_id = ? AND course_id IN (" + placeHolder + ")";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, studentId);
             for (int i = 0; i < courseIds.size(); i++) {
-                stmt.setInt(i + 1, courseIds.get(i));
+                stmt.setInt(i + 2, courseIds.get(i));
             }
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
