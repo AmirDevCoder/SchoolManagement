@@ -2,6 +2,7 @@ package client;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 class CourseGenerator {
 
@@ -30,7 +31,8 @@ class CourseGenerator {
     );
 
     public static String getName() {
-        return courseNames.get(random.nextInt(courseNames.size()));
+        String suffix = UUID.randomUUID().toString();
+        return courseNames.get(random.nextInt(courseNames.size())) + " " + suffix;
     }
 
     public static String getDescription() {

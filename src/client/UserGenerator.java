@@ -1,15 +1,14 @@
 package client;
 
 import java.sql.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 class UserGenerator {
     private static final List<String> names = List.of("John", "Jane", "Alice", "Bob", "Emily", "Michael", "Sarah", "David", "Sophia", "James");
     private static final List<String> families = List.of("Smith", "Doe", "Brown", "Johnson", "Williams", "Jones", "Miller", "Davis", "Garcia", "Rodriguez");
     private static final List<Integer> ages = List.of(18, 23, 30, 35, 40, 45, 50, 55, 60, 65);
+    private static final Set<String> generatedIds = new HashSet<>();
 
     private static final Random random = new Random();
 
@@ -31,7 +30,17 @@ class UserGenerator {
     }
 
     public static String getNationalId() {
-        return String.valueOf(1_000_000_000L + random.nextInt(900_000_000));
+        String nationalId;
+        do {
+            nationalId = String.valueOf(1_000_000_000L + random.nextInt(900_000_000));
+        } while (!isUnique(nationalId));
+
+        generatedIds.add(nationalId);
+        return nationalId;
+    }
+
+    private static boolean isUnique(String nationalId) {
+        return !generatedIds.contains(nationalId);
     }
 
     public static Date getBirthday() {
