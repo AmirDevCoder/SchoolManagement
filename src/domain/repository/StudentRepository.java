@@ -14,5 +14,7 @@ public interface StudentRepository extends BaseRepository<Student> {
     ResultWrapper<Boolean> addStudentCourseByStudentId(int studentId, List<Integer> courseIds);
     ResultWrapper<Student> upsert(Student student);
     ResultWrapper<List<Integer>> findStudentCourseIdsByStudentId(int studentId);
+    ResultWrapper<Boolean> addStudentTeacherByStudentId(int studentId, List<Integer> teacherIds);
+    ResultWrapper<Boolean> removeStudentTeacherByStudentId(int studentId);
 
 }

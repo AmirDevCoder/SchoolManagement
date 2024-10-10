@@ -55,6 +55,20 @@ public class StudentRepositoryImpl implements StudentRepository {
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addNewStudentCourse.getError());
             }
 
+            if (!currentStudentCoursesIds.getValue().isEmpty()) {
+                var removeStudentTeacher = removeStudentTeacherByStudentId(student.getId());
+                if (!removeStudentTeacher.isSuccess()) {
+                    connection.rollback();
+                    return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeStudentTeacher.getError());
+                }
+            }
+
+            var addStudentTeacher = addStudentTeacherByStudentId(student.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
+            if (!addStudentTeacher.isSuccess()) {
+                connection.rollback();
+                return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addStudentTeacher.getError());
+            }
+
             student.setCourses(desireCoursesRes.getValue());
             connection.commit();
 
@@ -250,6 +264,41 @@ public class StudentRepositoryImpl implements StudentRepository {
             return ResultWrapper.ok(courseIds);
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Failed to Load Student Active Courses " + e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultWrapper<Boolean> addStudentTeacherByStudentId(int studentId, List<Integer> teacherIds) {
+        String query = "INSERT INTO student_teacher (student_id, teacher_id) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            for (Integer teacherId : teacherIds) {
+                stmt.setInt(1, studentId);
+                stmt.setInt(2, teacherId);
+                stmt.addBatch();
+            }
+
+            int[] result = stmt.executeBatch();
+            for (int i : result) {
+                if (i == PreparedStatement.EXECUTE_FAILED) {
+                    return ResultWrapper.err(getClass().getSimpleName().concat(".addStudentTeacherByStudentId"), "One of the insertions failed");
+                }
+            }
+
+            return ResultWrapper.ok(true);
+        } catch (SQLException e) {
+            return ResultWrapper.err(getClass().getSimpleName().concat(".addStudentTeacherByStudentId"), e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultWrapper<Boolean> removeStudentTeacherByStudentId(int studentId) {
+        String query = "DELETE FROM student_teacher WHERE student_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, studentId);
+            stmt.executeUpdate();
+            return ResultWrapper.ok(true);
+        } catch (SQLException e) {
+            return ResultWrapper.err(getClass().getSimpleName().concat(".removeStudentTeacherByStudentId"), e.getMessage());
         }
     }
 
