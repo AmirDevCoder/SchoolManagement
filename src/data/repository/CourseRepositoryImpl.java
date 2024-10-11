@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryHelper;
 import domain.model.entity.Course;
 import domain.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,13 @@ public class CourseRepositoryImpl implements CourseRepository {
                 description = EXCLUDED.description
                 RETURNING *
                 """)) {
-            stmt.setString(1, course.getName());
-            stmt.setInt(2, course.getTeacherId());
-            stmt.setString(3, course.getDescription());
+            QueryHelper.setQueryColumn(
+                    stmt,
+                    course.getName(),
+                    course.getTeacherId(),
+                    course.getDescription()
+            );
             ResultSet resultSet = stmt.executeQuery();
-
             if (resultSet.next()) {
                 return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Course.class));
             }

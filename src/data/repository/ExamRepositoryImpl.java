@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryHelper;
 import domain.model.entity.Exam;
 import domain.repository.ExamRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,13 @@ public class ExamRepositoryImpl implements ExamRepository {
                 teacher_id = EXCLUDED.teacher_id
                 RETURNING *
                 """)) {
-            stmt.setString(1, exam.getName());
-            stmt.setInt(2, exam.getCourseId());
-            stmt.setInt(3, exam.getTeacherId());
+            QueryHelper.setQueryColumn(
+                    stmt,
+                    exam.getName(),
+                    exam.getCourseId(),
+                    exam.getTeacherId()
+            );
             ResultSet resultSet = stmt.executeQuery();
-
             if (resultSet.next()) {
                 return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Exam.class));
             }

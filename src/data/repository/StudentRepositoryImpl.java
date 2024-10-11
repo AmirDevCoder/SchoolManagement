@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryHelper;
 import domain.model.entity.Course;
 import domain.model.entity.Student;
 import domain.repository.CourseRepository;
@@ -111,7 +112,6 @@ public class StudentRepositoryImpl implements StudentRepository {
             }
 
             return ResultWrapper.ok(students);
-
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".getAll"), e.getMessage());
         }
@@ -120,9 +120,11 @@ public class StudentRepositoryImpl implements StudentRepository {
     @Override
     public ResultWrapper<Integer> getCountOfStudents() {
         try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT COUNT(*) FROM students")) {
-            resultSet.next();
-            return ResultWrapper.ok(resultSet.getInt(1));
+            if (resultSet.next()) {
+                return ResultWrapper.ok(resultSet.getInt(1));
+            }
 
+            return ResultWrapper.err(getClass().getSimpleName().concat(".getCountOfStudents"), "Unknown error");
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".getCountOfStudents"), e.getMessage());
         }
@@ -137,7 +139,6 @@ public class StudentRepositoryImpl implements StudentRepository {
                 WHERE t.id = ?
                 """)) {
             stmt.setInt(1, teacherId);
-
             ResultSet resultSet = stmt.executeQuery();
             List<Student> students = new ArrayList<>();
             while (resultSet.next()) {
@@ -171,13 +172,10 @@ public class StudentRepositoryImpl implements StudentRepository {
         String query = "INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             for (Integer courseId : courseIds) {
-                stmt.setInt(1, studentId);
-                stmt.setInt(2, courseId);
+                QueryHelper.setQueryColumn(stmt, studentId, courseId);
                 stmt.addBatch();
             }
-
             int[] result = stmt.executeBatch();
-
             for (int i : result) {
                 if (i == PreparedStatement.EXECUTE_FAILED) {
                     return ResultWrapper.err(getClass().getSimpleName().concat(".addCourses"), "One of the insertions failed");
@@ -203,12 +201,14 @@ public class StudentRepositoryImpl implements StudentRepository {
                 national_id = EXCLUDED.national_id
                 RETURNING *
                 """)) {
-            upsertStudentStmt.setString(1, student.getFirstName());
-            upsertStudentStmt.setString(2, student.getLastName());
-            upsertStudentStmt.setString(3, student.getEmail());
-            upsertStudentStmt.setDate(4, student.getDob());
-            upsertStudentStmt.setString(5, student.getNationalId());
-
+            QueryHelper.setQueryColumn(
+                    upsertStudentStmt,
+                    student.getFirstName(),
+                    student.getLastName(),
+                    student.getEmail(),
+                    student.getDob(),
+                    student.getNationalId()
+            );
             ResultSet resultSet = upsertStudentStmt.executeQuery();
             if (resultSet.next()) {
                 return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
@@ -242,8 +242,7 @@ public class StudentRepositoryImpl implements StudentRepository {
         String query = "INSERT INTO student_teacher (student_id, teacher_id) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             for (Integer teacherId : teacherIds) {
-                stmt.setInt(1, studentId);
-                stmt.setInt(2, teacherId);
+                QueryHelper.setQueryColumn(stmt, studentId, teacherId);
                 stmt.addBatch();
             }
 

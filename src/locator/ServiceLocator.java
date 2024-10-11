@@ -11,7 +11,7 @@ public class ServiceLocator {
 
     static {
         try {
-            Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+//            Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
             services = ServiceFactory.getServices();
         } catch (Exception e) {
             throw new RuntimeException(e);

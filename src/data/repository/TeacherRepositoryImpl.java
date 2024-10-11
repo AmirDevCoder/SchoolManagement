@@ -1,10 +1,12 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryHelper;
 import domain.model.entity.Teacher;
 import domain.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import util.ResultWrapper;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +28,19 @@ public class TeacherRepositoryImpl implements TeacherRepository {
                 national_id = EXCLUDED.national_id
                 RETURNING *
                 """)) {
-            stmt.setString(1, teacher.getFirstName());
-            stmt.setString(2, teacher.getLastName());
-            stmt.setString(3, teacher.getEmail());
-            stmt.setDate(4, teacher.getDob());
-            stmt.setString(5, teacher.getNationalId());
-
+            QueryHelper.setQueryColumn(
+                    stmt,
+                    teacher.getFirstName(),
+                    teacher.getLastName(),
+                    teacher.getEmail(),
+                    teacher.getDob(),
+                    teacher.getNationalId()
+            );
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Teacher.class));
             }
+
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Unknown error");
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), e.getMessage());
