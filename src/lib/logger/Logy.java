@@ -18,8 +18,8 @@ public abstract class Logy {
         }
     };
 
-    public static void log(LogyLevel level, String message) {
-        logyStore.add(new LogyTuple(level, message));
+    public static void log(LogyLevel level, Object input) {
+        logyStore.add(new LogyTuple(level, input.toString()));
     }
 
     public static void logOfMessages(LogyLevel logyLevel) {
