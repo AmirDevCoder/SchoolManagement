@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 
 import java.sql.Connection;
 
-public class ConnectionManager {
+public final class ConnectionManager {
     private static volatile Connection postgresConnection;
     private static volatile MongoDatabase mongoDatabase;
 
