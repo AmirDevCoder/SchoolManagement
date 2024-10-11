@@ -34,7 +34,6 @@ public class StudentRepositoryImpl implements StudentRepository {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), upsertRes.getError());
             }
-
             Student upsertStudent = upsertRes.getValue();
 
             var currentStudentCoursesIds = findStudentCourseIdsByStudentId(upsertStudent.getId());
@@ -73,11 +72,9 @@ public class StudentRepositoryImpl implements StudentRepository {
             }
 
             upsertStudent.setCourses(desireCoursesRes.getValue());
-
             connection.commit();
 
             return ResultWrapper.ok(upsertStudent);
-
         } catch (SQLException e) {
             throwable = new RuntimeException(e);
         } finally {
@@ -97,7 +94,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Student student) {
-        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM students WHERE national_id = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_STUDENT_BY_NATIONAL_ID)) {
             stmt.setString(1, student.getNationalId());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -108,7 +105,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<List<Student>> getAll() {
-        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM students")) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryHelper.FETCH_ALL_STUDENTS)) {
             List<Student> students = new ArrayList<>();
             while (resultSet.next()) {
                 students.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
@@ -122,7 +119,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Integer> getCountOfStudents() {
-        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT COUNT(*) FROM students")) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryHelper.COUNT_OF_STUDENTS)) {
             if (resultSet.next()) {
                 return ResultWrapper.ok(resultSet.getInt(1));
             }
@@ -135,12 +132,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<List<Student>> findByTeacherId(int teacherId) {
-        try (PreparedStatement stmt = connection.prepareStatement("""
-                SELECT * FROM students s
-                JOIN student_teacher st ON s.id = st.student_id
-                JOIN teachers t ON t.id = st.teacher_id
-                WHERE t.id = ?
-                """)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_BY_TEACHER_ID)) {
             stmt.setInt(1, teacherId);
             ResultSet resultSet = stmt.executeQuery();
             List<Student> students = new ArrayList<>();
@@ -172,8 +164,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Boolean> addStudentCourseByStudentId(int studentId, List<Integer> courseIds) {
-        String query = "INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)")) {
             for (Integer courseId : courseIds) {
                 QueryHelper.setQueryColumn(stmt, studentId, courseId);
                 stmt.addBatch();
@@ -193,17 +184,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Student> upsert(Student student) {
-        try (PreparedStatement upsertStudentStmt = connection.prepareStatement("""
-                INSERT INTO students (first_name, last_name, email, dob, national_id)
-                VALUES (?, ?, ?, ?, ?)
-                ON CONFLICT (national_id) DO UPDATE SET
-                first_name = EXCLUDED.first_name,
-                last_name = EXCLUDED.last_name,
-                email = EXCLUDED.email,
-                dob = EXCLUDED.dob,
-                national_id = EXCLUDED.national_id
-                RETURNING *
-                """)) {
+        try (PreparedStatement upsertStudentStmt = connection.prepareStatement(QueryHelper.UPSERT_STUDENTS)) {
             QueryHelper.setQueryColumn(
                     upsertStudentStmt,
                     student.getFirstName(),
@@ -218,7 +199,6 @@ public class StudentRepositoryImpl implements StudentRepository {
             } else {
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Failed to insert or update student");
             }
-
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Failed to insert or update student" + e.getMessage());
         }

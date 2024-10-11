@@ -20,14 +20,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<Course> save(Course course) {
-        try (PreparedStatement stmt = connection.prepareStatement("""
-                INSERT INTO courses (name, teacher_id, description) VALUES (?, ?, ?)
-                ON CONFLICT (name) DO UPDATE SET
-                name = EXCLUDED.name,
-                teacher_id = EXCLUDED.teacher_id,
-                description = EXCLUDED.description
-                RETURNING *
-                """)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.UPSERT_COURSES)) {
             QueryHelper.setQueryColumn(
                     stmt,
                     course.getName(),
@@ -47,7 +40,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Course course) {
-        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM courses WHERE name = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_COURSES_BY_NAME)) {
             stmt.setString(1, course.getName());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -58,7 +51,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<List<Course>> getAll() {
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM courses")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_ALL_COURSES)) {
             ResultSet resultSet = stmt.executeQuery();
             List<Course> courses = new ArrayList<>();
             while (resultSet.next()) {
@@ -75,18 +68,16 @@ public class CourseRepositoryImpl implements CourseRepository {
     public ResultWrapper<List<Course>> findCoursesByIds(List<Integer> ids) {
         String placeholders = String.join(",", ids.stream().map(id -> "?").toArray(String[]::new));
         String sql = "SELECT * FROM courses WHERE id IN (" + placeholders + ")";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (int i = 0; i < ids.size(); i++) {
                 preparedStatement.setInt(i + 1, ids.get(i));
             }
-
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Course> courses = new ArrayList<>();
-
             while (resultSet.next()) {
                 courses.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Course.class));
             }
+
             return ResultWrapper.ok(courses);
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".findCoursesByIds"), e.getMessage());

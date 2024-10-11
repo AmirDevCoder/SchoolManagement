@@ -20,14 +20,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<Exam> save(Exam exam) {
-        try (PreparedStatement stmt = connection.prepareStatement("""
-                INSERT INTO exams (name, course_id, teacher_id) VALUES (?, ?, ?)
-                ON CONFLICT (name) DO UPDATE SET
-                name = EXCLUDED.name,
-                course_id = EXCLUDED.course_id,
-                teacher_id = EXCLUDED.teacher_id
-                RETURNING *
-                """)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.UPSERT_EXAMS)) {
             QueryHelper.setQueryColumn(
                     stmt,
                     exam.getName(),
@@ -47,7 +40,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Exam exam) {
-        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM exams WHERE name = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_EXAMS_BY_NAME)) {
             stmt.setString(1, exam.getName());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -58,7 +51,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<List<Exam>> getAll() {
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM exams")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_ALL_EXAMS)) {
             ResultSet resultSet = stmt.executeQuery();
             List<Exam> exams = new ArrayList<>();
             while (resultSet.next()) {

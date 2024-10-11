@@ -17,17 +17,7 @@ public class TeacherRepositoryImpl implements TeacherRepository {
 
     @Override
     public ResultWrapper<Teacher> save(Teacher teacher) {
-        try (PreparedStatement stmt = connection.prepareStatement("""
-                INSERT INTO teachers (first_name, last_name, email, dob, national_id)
-                VALUES (?, ?, ?, ?, ?)
-                ON CONFLICT (national_id) DO UPDATE SET
-                first_name = EXCLUDED.first_name,
-                last_name = EXCLUDED.last_name,
-                email = EXCLUDED.email,
-                dob = EXCLUDED.dob,
-                national_id = EXCLUDED.national_id
-                RETURNING *
-                """)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.UPSERT_TEACHERS)) {
             QueryHelper.setQueryColumn(
                     stmt,
                     teacher.getFirstName(),
@@ -49,7 +39,7 @@ public class TeacherRepositoryImpl implements TeacherRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Teacher teacher) {
-        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM teachers WHERE national_id = ?")) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_TEACHER_BY_NATIONAL_ID)) {
             stmt.setString(1, teacher.getNationalId());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -60,14 +50,13 @@ public class TeacherRepositoryImpl implements TeacherRepository {
 
     @Override
     public ResultWrapper<List<Teacher>> getAll() {
-        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM teachers")) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryHelper.FETCH_ALL_TEACHERS)) {
             List<Teacher> teachers = new ArrayList<>();
             while (resultSet.next()) {
                 teachers.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Teacher.class));
             }
 
             return ResultWrapper.ok(teachers);
-
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".getAll"), e.getMessage());
         }
