@@ -35,7 +35,9 @@ public class StudentRepositoryImpl implements StudentRepository {
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), upsertRes.getError());
             }
 
-            var currentStudentCoursesIds = findStudentCourseIdsByStudentId(student.getId());
+            Student upsertStudent = upsertRes.getValue();
+
+            var currentStudentCoursesIds = findStudentCourseIdsByStudentId(upsertStudent.getId());
             if (!currentStudentCoursesIds.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), currentStudentCoursesIds.getError());
@@ -43,37 +45,38 @@ public class StudentRepositoryImpl implements StudentRepository {
 
             if (!currentStudentCoursesIds.getValue().isEmpty()) {
                 // todo: instead of removing all old data, check one-by-one and update new rows
-                var removeCurrentStudentCourse = removeStudentCourseByStudentId(student.getId(), currentStudentCoursesIds.getValue());
+                var removeCurrentStudentCourse = removeStudentCourseByStudentId(upsertStudent.getId(), currentStudentCoursesIds.getValue());
                 if (!removeCurrentStudentCourse.isSuccess()) {
                     connection.rollback();
                     return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeCurrentStudentCourse.getError());
                 }
             }
 
-            var addNewStudentCourse = addStudentCourseByStudentId(student.getId(), desireCoursesRes.getValue().stream().map(Course::getId).toList());
+            var addNewStudentCourse = addStudentCourseByStudentId(upsertStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getId).toList());
             if (!addNewStudentCourse.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addNewStudentCourse.getError());
             }
 
             if (!currentStudentCoursesIds.getValue().isEmpty()) {
-                var removeStudentTeacher = removeStudentTeacherByStudentId(student.getId());
+                var removeStudentTeacher = removeStudentTeacherByStudentId(upsertStudent.getId());
                 if (!removeStudentTeacher.isSuccess()) {
                     connection.rollback();
                     return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeStudentTeacher.getError());
                 }
             }
 
-            var addStudentTeacher = addStudentTeacherByStudentId(student.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
+            var addStudentTeacher = addStudentTeacherByStudentId(upsertStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
             if (!addStudentTeacher.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addStudentTeacher.getError());
             }
 
-            student.setCourses(desireCoursesRes.getValue());
+            upsertStudent.setCourses(desireCoursesRes.getValue());
+
             connection.commit();
 
-            return ResultWrapper.ok(student);
+            return ResultWrapper.ok(upsertStudent);
 
         } catch (SQLException e) {
             throwable = new RuntimeException(e);

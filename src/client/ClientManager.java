@@ -11,6 +11,7 @@ import util.ResultWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/// There may be an issue when performing an upsert operation on entities (e.g.student, course) at different times
 public final class ClientManager {
     private final static List<ResultWrapper<?>> results = new ArrayList<>();
     private final static StudentService studentSvc = ServiceLocator.getService(StudentService.class);
