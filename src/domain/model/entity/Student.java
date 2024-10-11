@@ -7,6 +7,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
+// TODO:
+//  it's better to implement entities immutable
+//  to avoiding race-condition or unexpected behavior(may be by using record class type)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
