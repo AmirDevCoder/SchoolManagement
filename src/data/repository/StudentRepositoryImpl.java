@@ -36,39 +36,39 @@ public class StudentRepositoryImpl implements StudentRepository {
             }
             Student savedStudent = upsertRes.getValue();
 
-            var currentStudentCoursesIds = findStudentCourseIdsByStudentId(savedStudent.getId());
-            if (!currentStudentCoursesIds.isSuccess()) {
+            var currentEnrollmentIds = findEnrollmentIdsByStudentId(savedStudent.getId());
+            if (!currentEnrollmentIds.isSuccess()) {
                 connection.rollback();
-                return ResultWrapper.err(getClass().getSimpleName().concat(".save"), currentStudentCoursesIds.getError());
+                return ResultWrapper.err(getClass().getSimpleName().concat(".save"), currentEnrollmentIds.getError());
             }
 
-            if (!currentStudentCoursesIds.getValue().isEmpty()) {
-                var removeCurrentStudentCourse = removeStudentCourseByStudentId(
+            if (!currentEnrollmentIds.getValue().isEmpty()) {
+                var removeCurrentEnrollment = removeEnrollmentByStudentId(
                         savedStudent.getId(),
-                        currentStudentCoursesIds.getValue().stream()
+                        currentEnrollmentIds.getValue().stream()
                                 .filter(id -> !desireCoursesRes.getValue().stream().map(Course::getId).toList().contains(id))
                                 .toList()
                 );
-                if (!removeCurrentStudentCourse.isSuccess()) {
+                if (!removeCurrentEnrollment.isSuccess()) {
                     connection.rollback();
-                    return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeCurrentStudentCourse.getError());
+                    return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeCurrentEnrollment.getError());
                 }
             }
 
-            var addNewStudentCourse = addStudentCourseByStudentId(
+            var addNewEnrollment = addEnrollmentByStudentId(
                     savedStudent.getId(),
                     desireCoursesRes.getValue().stream()
                             .map(Course::getId)
-                            .filter(id -> !currentStudentCoursesIds.getValue().contains(id))
+                            .filter(id -> !currentEnrollmentIds.getValue().contains(id))
                             .toList()
             );
-            if (!addNewStudentCourse.isSuccess()) {
+            if (!addNewEnrollment.isSuccess()) {
                 connection.rollback();
-                return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addNewStudentCourse.getError());
+                return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addNewEnrollment.getError());
             }
 
-            // TODO :instead of removing all rows from student_teacher table ,it's better to filter it like insertion in enrollment table(above query)
-            if (!currentStudentCoursesIds.getValue().isEmpty()) {
+            // TODO :instead of removing all rows from student_teacher table ,it's better to filter it like deletion in enrollment table(above query)
+            if (!currentEnrollmentIds.getValue().isEmpty()) {
                 var removeStudentTeacher = removeStudentTeacherByStudentId(savedStudent.getId());
                 if (!removeStudentTeacher.isSuccess()) {
                     connection.rollback();
@@ -76,7 +76,7 @@ public class StudentRepositoryImpl implements StudentRepository {
                 }
             }
 
-            // TODO` :instead of adding all rows to student_teacher table ,it's better to filter it like deletion in enrollment table(above query)
+            // TODO :instead of adding all rows to student_teacher table ,it's better to filter it like insertion in enrollment table(above query)
             var addStudentTeacher = addStudentTeacherByStudentId(savedStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
             if (!addStudentTeacher.isSuccess()) {
                 connection.rollback();
@@ -159,7 +159,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     @Override
-    public ResultWrapper<Boolean> removeStudentCourseByStudentId(int studentId, List<Integer> courseIds) {
+    public ResultWrapper<Boolean> removeEnrollmentByStudentId(int studentId, List<Integer> courseIds) {
         String placeHolder = String.join(",", courseIds.stream().map((id) -> "?").toArray(String[]::new));
         String query = "DELETE FROM enrollments WHERE student_id = ? AND course_id IN (" + placeHolder + ")";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -170,12 +170,12 @@ public class StudentRepositoryImpl implements StudentRepository {
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
         } catch (SQLException e) {
-            return ResultWrapper.err(getClass().getSimpleName().concat(".removeStudentCourses"), e.getMessage());
+            return ResultWrapper.err(getClass().getSimpleName().concat(".removeEnrollment"), e.getMessage());
         }
     }
 
     @Override
-    public ResultWrapper<Boolean> addStudentCourseByStudentId(int studentId, List<Integer> courseIds) {
+    public ResultWrapper<Boolean> addEnrollmentByStudentId(int studentId, List<Integer> courseIds) {
         try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)")) {
             for (Integer courseId : courseIds) {
                 QueryHelper.setQueryColumn(stmt, studentId, courseId);
@@ -217,7 +217,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     @Override
-    public ResultWrapper<List<Integer>> findStudentCourseIdsByStudentId(int studentId) {
+    public ResultWrapper<List<Integer>> findEnrollmentIdsByStudentId(int studentId) {
         try (PreparedStatement loadStudentActiveCoursesStmt = connection.prepareStatement("SELECT course_id FROM enrollments WHERE student_id = ?")) {
             loadStudentActiveCoursesStmt.setInt(1, studentId);
             ResultSet resultSet = loadStudentActiveCoursesStmt.executeQuery();
