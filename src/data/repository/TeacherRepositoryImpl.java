@@ -1,10 +1,10 @@
 package data.repository;
 
+import data.mapper.EntityMapperFactory;
 import domain.model.entity.Teacher;
 import domain.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import util.ResultWrapper;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +34,7 @@ public class TeacherRepositoryImpl implements TeacherRepository {
 
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                return ResultWrapper.ok(Teacher.builder()
-                        .id(resultSet.getInt("id"))
-                        .firstName(resultSet.getString("first_name"))
-                        .lastName(resultSet.getString("last_name"))
-                        .email(resultSet.getString("email"))
-                        .dob(resultSet.getDate("dob"))
-                        .nationalId(resultSet.getString("national_id"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Teacher.class));
             }
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Unknown error");
         } catch (SQLException e) {
@@ -67,25 +58,7 @@ public class TeacherRepositoryImpl implements TeacherRepository {
         try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM teachers")) {
             List<Teacher> teachers = new ArrayList<>();
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String email = resultSet.getString("email");
-                Date dateOfBirth = resultSet.getDate("dob");
-                String nationalId = resultSet.getString("national_id");
-                Date createdAt = resultSet.getDate("created_at");
-                Date updatedAt = resultSet.getDate("updated_at");
-                teachers.add(Teacher.builder()
-                        .id(id)
-                        .firstName(firstName)
-                        .lastName(lastName)
-                        .email(email)
-                        .dob(dateOfBirth)
-                        .nationalId(nationalId)
-                        .createdAt(createdAt)
-                        .updatedAt(updatedAt)
-                        .build()
-                );
+                teachers.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Teacher.class));
             }
 
             return ResultWrapper.ok(teachers);

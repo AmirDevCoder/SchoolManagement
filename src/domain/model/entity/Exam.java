@@ -1,21 +1,18 @@
 package domain.model.entity;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Builder
-@Getter
-@EqualsAndHashCode
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Exam {
     private Integer id;
     private String name;
     private Integer courseId;
     private Integer teacherId;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

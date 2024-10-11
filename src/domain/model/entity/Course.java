@@ -1,23 +1,22 @@
 package domain.model.entity;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import data.mapper.IgnoreMapping;
+import lombok.*;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Builder
-@Getter
-@EqualsAndHashCode
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Course {
     private Integer id;
     private String name;
     private Integer teacherId;
     private String description;
+    @IgnoreMapping
     private List<Student> students;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

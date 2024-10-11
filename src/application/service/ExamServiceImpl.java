@@ -1,7 +1,6 @@
 package application.service;
 
 import domain.model.dto.ExamDto;
-import domain.model.entity.Exam;
 import domain.model.entity.Logs;
 import domain.model.entity.LogsAction;
 import domain.repository.ExamRepository;

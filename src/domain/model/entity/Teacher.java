@@ -1,16 +1,15 @@
 package domain.model.entity;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
+import data.mapper.IgnoreMapping;
+import lombok.*;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Builder
-@Getter
-@ToString
-@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Teacher {
     private Integer id;
     private String firstName;
@@ -18,6 +17,8 @@ public class Teacher {
     private String email;
     private Date dob;
     private String nationalId;
-    private Date createdAt;
-    private Date updatedAt;
+    @IgnoreMapping
+    private List<Student> students;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

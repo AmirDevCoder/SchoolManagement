@@ -1,8 +1,7 @@
 package domain.model.dto;
 
 import domain.model.entity.Exam;
-
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public interface ExamDto {
         }
     }
 
-    record Response(int id, String name, int courseId, int teacherId, Date createdAt) {
+    record Response(int id, String name, int courseId, int teacherId, Timestamp createdAt) {
 
     }
 }

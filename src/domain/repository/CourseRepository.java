@@ -1,7 +1,7 @@
 package domain.repository;
 
 import domain.model.entity.Course;
-import util.BaseRepository;
+import domain.util.BaseRepository;
 import util.ResultWrapper;
 
 import java.util.List;

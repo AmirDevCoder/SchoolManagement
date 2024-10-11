@@ -1,5 +1,6 @@
 package data.repository;
 
+import data.mapper.EntityMapperFactory;
 import domain.model.entity.Exam;
 import domain.repository.ExamRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,7 @@ public class ExamRepositoryImpl implements ExamRepository {
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
-                return ResultWrapper.ok(Exam.builder()
-                        .id(resultSet.getInt("id"))
-                        .name(resultSet.getString("name"))
-                        .courseId(resultSet.getInt("course_id"))
-                        .teacherId(resultSet.getInt("teacher_id"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Exam.class));
             }
 
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Unknown error");
@@ -65,14 +59,7 @@ public class ExamRepositoryImpl implements ExamRepository {
             ResultSet resultSet = stmt.executeQuery();
             List<Exam> exams = new ArrayList<>();
             while (resultSet.next()) {
-                exams.add(Exam.builder()
-                        .id(resultSet.getInt("id"))
-                        .name(resultSet.getString("name"))
-                        .courseId(resultSet.getInt("course_id"))
-                        .teacherId(resultSet.getInt("teacher_id"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                exams.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Exam.class));
             }
 
             return ResultWrapper.ok(exams);

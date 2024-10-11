@@ -1,11 +1,15 @@
 package domain.model.entity;
 
+import data.mapper.IgnoreMapping;
 import lombok.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class Student {
     private Integer id;
@@ -14,7 +18,8 @@ public class Student {
     private String email;
     private Date dob;
     private String nationalId;
+    @IgnoreMapping
     private List<Course> courses;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

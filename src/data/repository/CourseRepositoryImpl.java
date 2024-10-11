@@ -1,5 +1,6 @@
 package data.repository;
 
+import data.mapper.EntityMapperFactory;
 import domain.model.entity.Course;
 import domain.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,7 @@ public class CourseRepositoryImpl implements CourseRepository {
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
-                return ResultWrapper.ok(Course.builder()
-                        .id(resultSet.getInt("id"))
-                        .name(resultSet.getString("name"))
-                        .teacherId(resultSet.getInt("teacher_id"))
-                        .description(resultSet.getString("description"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Course.class));
             }
 
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Unknown error");
@@ -65,14 +59,7 @@ public class CourseRepositoryImpl implements CourseRepository {
             ResultSet resultSet = stmt.executeQuery();
             List<Course> courses = new ArrayList<>();
             while (resultSet.next()) {
-                courses.add(Course.builder()
-                        .id(resultSet.getInt("id"))
-                        .name(resultSet.getString("name"))
-                        .teacherId(resultSet.getInt("teacher_id"))
-                        .description(resultSet.getString("description"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                courses.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Course.class));
             }
 
             return ResultWrapper.ok(courses);
@@ -95,14 +82,7 @@ public class CourseRepositoryImpl implements CourseRepository {
             List<Course> courses = new ArrayList<>();
 
             while (resultSet.next()) {
-                courses.add(Course.builder()
-                        .id(resultSet.getInt("id"))
-                        .name(resultSet.getString("name"))
-                        .teacherId(resultSet.getInt("teacher_id"))
-                        .description(resultSet.getString("description"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                courses.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Course.class));
             }
             return ResultWrapper.ok(courses);
         } catch (SQLException e) {

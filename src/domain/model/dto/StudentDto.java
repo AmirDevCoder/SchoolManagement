@@ -4,6 +4,7 @@ import domain.model.entity.Course;
 import domain.model.entity.Student;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,6 @@ public interface StudentDto {
         }
     }
 
-    record Response(int id, String fullName, String email, String nationalId, List<Course> courses, Date createdAt) {
+    record Response(int id, String fullName, String email, String nationalId, List<Course> courses, Timestamp createdAt) {
     }
 }

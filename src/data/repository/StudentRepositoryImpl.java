@@ -1,5 +1,6 @@
 package data.repository;
 
+import data.mapper.EntityMapperFactory;
 import domain.model.entity.Course;
 import domain.model.entity.Student;
 import domain.repository.CourseRepository;
@@ -11,7 +12,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// todo: use mapping for map the db-entity into java-class
 @RequiredArgsConstructor
 public class StudentRepositoryImpl implements StudentRepository {
     private final Connection connection;
@@ -107,25 +107,7 @@ public class StudentRepositoryImpl implements StudentRepository {
         try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM students")) {
             List<Student> students = new ArrayList<>();
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String email = resultSet.getString("email");
-                Date dateOfBirth = resultSet.getDate("dob");
-                String nationalId = resultSet.getString("national_id");
-                Date createdAt = resultSet.getDate("created_at");
-                Date updatedAt = resultSet.getDate("updated_at");
-                students.add(Student.builder()
-                        .id(id)
-                        .firstName(firstName)
-                        .lastName(lastName)
-                        .email(email)
-                        .dob(dateOfBirth)
-                        .nationalId(nationalId)
-                        .createdAt(createdAt)
-                        .updatedAt(updatedAt)
-                        .build()
-                );
+                students.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
             }
 
             return ResultWrapper.ok(students);
@@ -159,16 +141,7 @@ public class StudentRepositoryImpl implements StudentRepository {
             ResultSet resultSet = stmt.executeQuery();
             List<Student> students = new ArrayList<>();
             while (resultSet.next()) {
-                students.add(Student.builder()
-                        .id(resultSet.getInt("id"))
-                        .firstName(resultSet.getString("first_name"))
-                        .lastName(resultSet.getString("last_name"))
-                        .email(resultSet.getString("email"))
-                        .dob(resultSet.getDate("dob"))
-                        .nationalId(resultSet.getString("national_id"))
-                        .createdAt(resultSet.getDate("created_at"))
-                        .updatedAt(resultSet.getDate("updated_at"))
-                        .build());
+                students.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
             }
 
             return ResultWrapper.ok(students);
@@ -238,14 +211,11 @@ public class StudentRepositoryImpl implements StudentRepository {
 
             ResultSet resultSet = upsertStudentStmt.executeQuery();
             if (resultSet.next()) {
-                student.setId(resultSet.getInt("id"));
-                student.setCreatedAt(resultSet.getDate("created_at"));
-                student.setUpdatedAt(resultSet.getDate("updated_at"));
+                return ResultWrapper.ok(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
             } else {
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Failed to insert or update student");
             }
 
-            return ResultWrapper.ok(student);
         } catch (SQLException e) {
             return ResultWrapper.err(getClass().getSimpleName().concat(".save"), "Failed to insert or update student" + e.getMessage());
         }
