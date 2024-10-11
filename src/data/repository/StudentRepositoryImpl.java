@@ -34,47 +34,59 @@ public class StudentRepositoryImpl implements StudentRepository {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), upsertRes.getError());
             }
-            Student upsertStudent = upsertRes.getValue();
+            Student savedStudent = upsertRes.getValue();
 
-            var currentStudentCoursesIds = findStudentCourseIdsByStudentId(upsertStudent.getId());
+            var currentStudentCoursesIds = findStudentCourseIdsByStudentId(savedStudent.getId());
             if (!currentStudentCoursesIds.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), currentStudentCoursesIds.getError());
             }
 
             if (!currentStudentCoursesIds.getValue().isEmpty()) {
-                // todo: instead of removing all old data, check one-by-one and update new rows
-                var removeCurrentStudentCourse = removeStudentCourseByStudentId(upsertStudent.getId(), currentStudentCoursesIds.getValue());
+                var removeCurrentStudentCourse = removeStudentCourseByStudentId(
+                        savedStudent.getId(),
+                        currentStudentCoursesIds.getValue().stream()
+                                .filter(id -> !desireCoursesRes.getValue().stream().map(Course::getId).toList().contains(id))
+                                .toList()
+                );
                 if (!removeCurrentStudentCourse.isSuccess()) {
                     connection.rollback();
                     return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeCurrentStudentCourse.getError());
                 }
             }
 
-            var addNewStudentCourse = addStudentCourseByStudentId(upsertStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getId).toList());
+            var addNewStudentCourse = addStudentCourseByStudentId(
+                    savedStudent.getId(),
+                    desireCoursesRes.getValue().stream()
+                            .map(Course::getId)
+                            .filter(id -> !currentStudentCoursesIds.getValue().contains(id))
+                            .toList()
+            );
             if (!addNewStudentCourse.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addNewStudentCourse.getError());
             }
 
+            // TODO :instead of removing all rows from student_teacher table ,it's better to filter it like insertion in enrollment table(above query)
             if (!currentStudentCoursesIds.getValue().isEmpty()) {
-                var removeStudentTeacher = removeStudentTeacherByStudentId(upsertStudent.getId());
+                var removeStudentTeacher = removeStudentTeacherByStudentId(savedStudent.getId());
                 if (!removeStudentTeacher.isSuccess()) {
                     connection.rollback();
                     return ResultWrapper.err(getClass().getSimpleName().concat(".save"), removeStudentTeacher.getError());
                 }
             }
 
-            var addStudentTeacher = addStudentTeacherByStudentId(upsertStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
+            // TODO` :instead of adding all rows to student_teacher table ,it's better to filter it like deletion in enrollment table(above query)
+            var addStudentTeacher = addStudentTeacherByStudentId(savedStudent.getId(), desireCoursesRes.getValue().stream().map(Course::getTeacherId).toList());
             if (!addStudentTeacher.isSuccess()) {
                 connection.rollback();
                 return ResultWrapper.err(getClass().getSimpleName().concat(".save"), addStudentTeacher.getError());
             }
 
-            upsertStudent.setCourses(desireCoursesRes.getValue());
+            savedStudent.setCourses(desireCoursesRes.getValue());
             connection.commit();
 
-            return ResultWrapper.ok(upsertStudent);
+            return ResultWrapper.ok(savedStudent);
         } catch (SQLException e) {
             throwable = new RuntimeException(e);
         } finally {
