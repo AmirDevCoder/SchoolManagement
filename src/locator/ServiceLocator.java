@@ -1,7 +1,5 @@
 package locator;
 
-import lib.logger.Logy;
-import lib.logger.LogyLevel;
 import lombok.experimental.UtilityClass;
 import util.GlobalExceptionHandler;
 
@@ -13,7 +11,6 @@ public class ServiceLocator {
 
     static {
         try {
-            Logy.log(LogyLevel.SUCCESS, "hiii");
             Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
             services = ServiceFactory.getServices();
         } catch (Exception e) {
