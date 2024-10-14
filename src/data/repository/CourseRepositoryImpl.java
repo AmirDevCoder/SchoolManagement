@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryConst;
 import data.util.QueryHelper;
 import domain.model.entity.Course;
 import domain.repository.CourseRepository;
@@ -20,7 +21,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<Course> save(Course course) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.UPSERT_COURSES)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.UPSERT_COURSES)) {
             QueryHelper.setQueryColumn(
                     stmt,
                     course.getName(),
@@ -40,7 +41,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Course course) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_COURSES_BY_NAME)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.DELETE_COURSES_BY_NAME)) {
             stmt.setString(1, course.getName());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -51,7 +52,7 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public ResultWrapper<List<Course>> getAll() {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_ALL_COURSES)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.FETCH_ALL_COURSES)) {
             ResultSet resultSet = stmt.executeQuery();
             List<Course> courses = new ArrayList<>();
             while (resultSet.next()) {

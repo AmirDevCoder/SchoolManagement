@@ -11,6 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class LoggerRepositoryImpl implements LoggerRepository {
+    //TODO: use elastic-search for log instead of mongoDB
     private final MongoCollection<Logs> collection;
 
     @Override

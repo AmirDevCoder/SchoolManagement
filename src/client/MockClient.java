@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /// There may be an issue when performing an upsert operation on entities (e.g.student, course) at different times
-public final class ClientManager {
+public final class MockClient {
     private final static List<ResultWrapper<?>> results = new ArrayList<>();
     private final static StudentService studentSvc = ServiceLocator.getService(StudentService.class);
     private final static TeacherService teacherSvc = ServiceLocator.getService(TeacherService.class);
@@ -21,15 +21,15 @@ public final class ClientManager {
     private final static GradeService gradeSvc = ServiceLocator.getService(GradeService.class);
     private final static BackOfficeService backOfficeSvc = ServiceLocator.getService(BackOfficeService.class);
 
-    private ClientManager() {
+    private MockClient() {
     }
 
     // semi builder design-pattern
-    public static ClientManager builder() {
-        return new ClientManager();
+    public static MockClient builder() {
+        return new MockClient();
     }
 
-    public ClientManager upsertTeacher() {
+    public MockClient upsertTeacher() {
         results.add(teacherSvc.save(new TeacherDto.Request(
                 UserGenerator.getName(),
                 UserGenerator.getFamily(),
@@ -41,17 +41,17 @@ public final class ClientManager {
         return this;
     }
 
-    public ClientManager deleteStudent(String nationalId) {
+    public MockClient deleteStudent(String nationalId) {
         results.add(studentSvc.delete(nationalId));
         return this;
     }
 
-    public ClientManager fetchStudents() {
+    public MockClient fetchStudents() {
         results.add(studentSvc.getAll());
         return this;
     }
 
-    public ClientManager upsertCourse(int teacherId) {
+    public MockClient upsertCourse(int teacherId) {
         results.add(courseSvc.save(new CourseDto.Request(
                 CourseGenerator.getName(),
                 teacherId,
@@ -61,7 +61,7 @@ public final class ClientManager {
         return this;
     }
 
-    public ClientManager upsertStudent(List<Integer> courseIds) {
+    public MockClient upsertStudent(List<Integer> courseIds) {
         results.add(studentSvc.save(new StudentDto.Request(
                 UserGenerator.getName(),
                 UserGenerator.getFamily(),
@@ -74,22 +74,22 @@ public final class ClientManager {
         return this;
     }
 
-    public ClientManager findStudentByTeacherId(int teacherId) {
+    public MockClient findStudentByTeacherId(int teacherId) {
         results.add(studentSvc.findByTeacherId(teacherId));
         return this;
     }
 
-    public ClientManager findStudentCount() {
+    public MockClient findStudentCount() {
         results.add(studentSvc.getCount());
         return this;
     }
 
-    public ClientManager upsertStudent(StudentDto.Request req) {
+    public MockClient upsertStudent(StudentDto.Request req) {
         results.add(studentSvc.save(req));
         return this;
     }
 
-    public ClientManager insertBackOffice() {
+    public MockClient insertBackOffice() {
         results.add(backOfficeSvc.save(new BackOfficeDto.Request(
                 UserGenerator.getName(),
                 UserGenerator.getFamily(),
@@ -103,12 +103,12 @@ public final class ClientManager {
         return this;
     }
 
-    public ClientManager fetchBackOffices() {
+    public MockClient fetchBackOffices() {
         results.add(backOfficeSvc.getAll());
         return this;
     }
 
-    public ClientManager deleteBackOffice(String nationalId) {
+    public MockClient deleteBackOffice(String nationalId) {
         results.add(backOfficeSvc.delete(nationalId));
         return this;
     }

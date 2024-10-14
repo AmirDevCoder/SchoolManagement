@@ -1,4 +1,4 @@
-package application.service;
+package presenter.service;
 
 import domain.model.dto.StudentDto;
 import domain.model.entity.Logs;
@@ -12,7 +12,6 @@ import util.ResultWrapper;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
@@ -64,11 +63,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public ResultWrapper<StudentDto.Response> save(StudentDto.Request req) {
+        // TODO: you can fetch Courses from CourseService here first
         var res = repo.save(req.toStudent());
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.STUDENT_REGISTERED.name())
-                    .userNationalId(res.getValue().getNationalId())
+                    .data(res.getValue().getNationalId())
                     .time(Instant.now())
                     .build());
             return res.map(student -> new StudentDto.Response(
@@ -90,7 +90,7 @@ public class StudentServiceImpl implements StudentService {
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.STUDENT_REMOVED.name())
-                    .userNationalId(nationalId)
+                    .data(nationalId)
                     .time(Instant.now())
                     .build());
 

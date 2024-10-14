@@ -21,6 +21,7 @@ public class Student {
     private String email;
     private Date dob;
     private String nationalId;
+    // TODO: remove it, when a course remove in db
     @IgnoreMapping
     private List<Course> courses;
     private Timestamp createdAt;

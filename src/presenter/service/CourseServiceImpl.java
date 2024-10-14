@@ -1,7 +1,6 @@
-package application.service;
+package presenter.service;
 
 import domain.model.dto.CourseDto;
-import domain.model.entity.Course;
 import domain.model.entity.Logs;
 import domain.model.entity.LogsAction;
 import domain.repository.CourseRepository;

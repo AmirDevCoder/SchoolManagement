@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 /// It can be inherited by others, but instantiation is not allowed.
 public abstract class Logy {
 
+    //TODO: store logs in a file
     private static final List<LogyTuple> logyStore = new ArrayList<>() {
         @Override
         public boolean add(LogyTuple logyTuple) {

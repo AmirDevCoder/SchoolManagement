@@ -9,8 +9,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Data
 public class Logs {
-    private String userNationalId;
-    private String courseName;
+    private String data;
     private String action;
     private Instant time;
 }

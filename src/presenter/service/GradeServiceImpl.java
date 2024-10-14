@@ -1,4 +1,4 @@
-package application.service;
+package presenter.service;
 
 import domain.repository.GradeRepository;
 import domain.service.GradeService;

@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryConst;
 import data.util.QueryHelper;
 import domain.model.entity.Exam;
 import domain.repository.ExamRepository;
@@ -20,7 +21,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<Exam> save(Exam exam) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.UPSERT_EXAMS)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.UPSERT_EXAMS)) {
             QueryHelper.setQueryColumn(
                     stmt,
                     exam.getName(),
@@ -40,7 +41,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Exam exam) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_EXAMS_BY_NAME)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.DELETE_EXAMS_BY_NAME)) {
             stmt.setString(1, exam.getName());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -51,7 +52,7 @@ public class ExamRepositoryImpl implements ExamRepository {
 
     @Override
     public ResultWrapper<List<Exam>> getAll() {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_ALL_EXAMS)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.FETCH_ALL_EXAMS)) {
             ResultSet resultSet = stmt.executeQuery();
             List<Exam> exams = new ArrayList<>();
             while (resultSet.next()) {

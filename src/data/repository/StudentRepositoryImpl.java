@@ -1,6 +1,7 @@
 package data.repository;
 
 import data.mapper.EntityMapperFactory;
+import data.util.QueryConst;
 import data.util.QueryHelper;
 import domain.model.entity.Course;
 import domain.model.entity.Student;
@@ -106,7 +107,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Boolean> delete(Student student) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.DELETE_STUDENT_BY_NATIONAL_ID)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.DELETE_STUDENT_BY_NATIONAL_ID)) {
             stmt.setString(1, student.getNationalId());
             stmt.executeUpdate();
             return ResultWrapper.ok(true);
@@ -117,7 +118,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<List<Student>> getAll() {
-        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryHelper.FETCH_ALL_STUDENTS)) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryConst.FETCH_ALL_STUDENTS)) {
             List<Student> students = new ArrayList<>();
             while (resultSet.next()) {
                 students.add(EntityMapperFactory.fromResultSet(resultSet).mapTo(Student.class));
@@ -131,7 +132,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Integer> getCountOfStudents() {
-        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryHelper.COUNT_OF_STUDENTS)) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(QueryConst.COUNT_OF_STUDENTS)) {
             if (resultSet.next()) {
                 return ResultWrapper.ok(resultSet.getInt(1));
             }
@@ -144,7 +145,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<List<Student>> findByTeacherId(int teacherId) {
-        try (PreparedStatement stmt = connection.prepareStatement(QueryHelper.FETCH_BY_TEACHER_ID)) {
+        try (PreparedStatement stmt = connection.prepareStatement(QueryConst.FETCH_BY_TEACHER_ID)) {
             stmt.setInt(1, teacherId);
             ResultSet resultSet = stmt.executeQuery();
             List<Student> students = new ArrayList<>();
@@ -160,6 +161,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Boolean> removeEnrollmentByStudentId(int studentId, List<Integer> courseIds) {
+        // TODO: check for placeHolder feature exist in JDBC or not
         String placeHolder = String.join(",", courseIds.stream().map((id) -> "?").toArray(String[]::new));
         String query = "DELETE FROM enrollments WHERE student_id = ? AND course_id IN (" + placeHolder + ")";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -196,7 +198,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public ResultWrapper<Student> upsert(Student student) {
-        try (PreparedStatement upsertStudentStmt = connection.prepareStatement(QueryHelper.UPSERT_STUDENTS)) {
+        try (PreparedStatement upsertStudentStmt = connection.prepareStatement(QueryConst.UPSERT_STUDENTS)) {
             QueryHelper.setQueryColumn(
                     upsertStudentStmt,
                     student.getFirstName(),

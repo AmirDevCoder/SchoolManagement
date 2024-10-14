@@ -1,6 +1,7 @@
 package locator;
 
-import application.service.*;
+import presenter.aop.ProxyFactory;
+import presenter.service.*;
 import data.repository.*;
 import domain.model.entity.BackOffice;
 import domain.model.entity.Logs;
@@ -29,6 +30,8 @@ public class ServiceFactory {
 
         var studentRepo = new StudentRepositoryImpl(ConnectionManager.getPostgresConnection(), courseRepo);
         var studentSvc = new StudentServiceImpl(studentRepo, loggerSvc);
+        var proxyFactory = new ProxyFactory(loggerSvc);
+        var studentSvcProxy = proxyFactory.createProxy(studentSvc, StudentService.class);
 
         var gradeRepo = new GradeRepositoryImpl(ConnectionManager.getPostgresConnection());
         var gradeSvc = new GradeServiceImpl(gradeRepo, loggerSvc);
@@ -39,7 +42,7 @@ public class ServiceFactory {
         var backOfficeRepo = new BackOfficeRepositoryImpl(ConnectionManager.getMongoDatabase().getCollection(BackOffice.class.getSimpleName().toLowerCase(), BackOffice.class));
         var backOfficeSvc = new BackOfficeServiceImpl(backOfficeRepo, loggerSvc);
 
-        services.put(StudentService.class, studentSvc);
+        services.put(StudentService.class, studentSvcProxy);
         services.put(LoggerService.class, loggerSvc);
         services.put(GradeService.class, gradeSvc);
         services.put(ExamService.class, examSvc);

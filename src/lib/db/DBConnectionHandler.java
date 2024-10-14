@@ -13,7 +13,7 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+// TODO: set it immutable
 public final class DBConnectionHandler {
 
     private static MongoClient mongoClient;

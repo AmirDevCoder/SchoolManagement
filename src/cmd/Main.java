@@ -1,9 +1,9 @@
 package cmd;
 
-import application.presenter.AppPresenter;
+import presenter.bootstrap.Runner;
 
 public class Main {
     public static void main(String[] args) {
-        AppPresenter.run();
+        Runner.run();
     }
 }
