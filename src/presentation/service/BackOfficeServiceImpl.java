@@ -1,4 +1,4 @@
-package presenter.service;
+package presentation.service;
 
 import domain.model.dto.BackOfficeDto;
 import domain.model.entity.BackOffice;

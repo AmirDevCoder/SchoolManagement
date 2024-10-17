@@ -1,7 +1,7 @@
 package locator;
 
-import presenter.aop.ProxyFactory;
-import presenter.service.*;
+import presentation.aop.ProxyFactory;
+import presentation.service.*;
 import data.repository.*;
 import domain.model.entity.BackOffice;
 import domain.model.entity.Logs;

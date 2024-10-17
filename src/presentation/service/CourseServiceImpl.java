@@ -1,4 +1,4 @@
-package presenter.service;
+package presentation.service;
 
 import domain.model.dto.CourseDto;
 import domain.model.entity.Logs;

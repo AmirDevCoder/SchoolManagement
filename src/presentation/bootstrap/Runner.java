@@ -1,4 +1,4 @@
-package presenter.bootstrap;
+package presentation.bootstrap;
 
 import client.MockClient;
 import lombok.experimental.UtilityClass;

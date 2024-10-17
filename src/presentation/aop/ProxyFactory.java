@@ -1,4 +1,4 @@
-package presenter.aop;
+package presentation.aop;
 
 import domain.service.LoggerService;
 import lombok.RequiredArgsConstructor;
