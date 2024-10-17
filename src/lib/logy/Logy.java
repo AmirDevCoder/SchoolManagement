@@ -1,11 +1,7 @@
-package lib.logger;
+package lib.logy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
 /// It can be inherited by others, but instantiation is not allowed.
 public abstract class Logy {

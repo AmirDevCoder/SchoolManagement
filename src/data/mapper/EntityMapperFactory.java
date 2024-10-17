@@ -1,7 +1,7 @@
 package data.mapper;
 
-import lib.logger.Logy;
-import lib.logger.LogyLevel;
+import lib.logy.Logy;
+import lib.logy.LogyLevel;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;

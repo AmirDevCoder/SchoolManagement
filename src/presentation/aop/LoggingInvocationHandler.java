@@ -1,8 +1,8 @@
 package presentation.aop;
 
 import domain.service.LoggerService;
-import lib.logger.Logy;
-import lib.logger.LogyLevel;
+import lib.logy.Logy;
+import lib.logy.LogyLevel;
 import lombok.RequiredArgsConstructor;
 import util.ResultWrapper;
 

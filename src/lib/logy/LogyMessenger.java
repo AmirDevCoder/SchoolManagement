@@ -1,4 +1,4 @@
-package lib.logger;
+package lib.logy;
 
 public final class LogyMessenger {
 

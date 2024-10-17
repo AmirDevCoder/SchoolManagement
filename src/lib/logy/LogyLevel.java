@@ -1,4 +1,4 @@
-package lib.logger;
+package lib.logy;
 
 public enum LogyLevel {
     SUCCESS("\u001B[32m"),  // Green

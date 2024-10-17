@@ -1,7 +1,7 @@
 package presentation.util;
 
-import lib.logger.Logy;
-import lib.logger.LogyLevel;
+import lib.logy.Logy;
+import lib.logy.LogyLevel;
 
 import java.util.Scanner;
 
