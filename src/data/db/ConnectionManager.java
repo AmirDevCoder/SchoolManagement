@@ -1,8 +1,7 @@
-package locator;
+package data.db;
 
 import com.mongodb.client.MongoDatabase;
 import lib.db.Database;
-import lombok.experimental.UtilityClass;
 
 import java.sql.Connection;
 

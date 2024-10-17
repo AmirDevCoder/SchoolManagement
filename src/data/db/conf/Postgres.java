@@ -1,4 +1,4 @@
-package data.db.dbconf;
+package data.db.conf;
 
 import lib.db.DBConfigAbstraction;
 import lib.db.DBConfiguration;
@@ -6,13 +6,13 @@ import lib.db.DBType;
 
 // convention over configuration
 @DBConfiguration
-public class Mongo extends DBConfigAbstraction {
+public class Postgres extends DBConfigAbstraction {
 
     /// we can inject configuration file here
 
     @Override
     public DBType getDBType() {
-        return DBType.MONGODB;
+        return DBType.POSTGRESQL;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Mongo extends DBConfigAbstraction {
 
     @Override
     public int getPort() {
-        return 27017;
+        return 5432;
     }
 
     @Override

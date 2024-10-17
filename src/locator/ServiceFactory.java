@@ -1,5 +1,6 @@
 package locator;
 
+import data.db.ConnectionManager;
 import presentation.aop.ProxyFactory;
 import presentation.service.*;
 import data.repository.*;
