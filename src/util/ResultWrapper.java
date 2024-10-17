@@ -86,6 +86,9 @@ public final class ResultWrapper<T> {
         }
     }
 
+    public record Pair<T>(T first, T second) {
+    }
+
     private static class Err {
         private final String operation;
         private final String message;
