@@ -33,7 +33,7 @@ public class CourseServiceImpl implements CourseService {
         var res = repo.save(req.toCourse());
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
-                    .courseName(req.name())
+                    .data(req.name())
                     .action(LogsAction.COURSE_ADDED.name())
                     .time(Instant.now())
                     .build());

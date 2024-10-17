@@ -24,7 +24,7 @@ public class BackOfficeServiceImpl implements BackOfficeService {
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.BACKOFFICE_ADDED.name())
-                    .userNationalId(req.nationalId())
+                    .data(req.nationalId())
                     .time(Instant.now())
                     .build());
 
@@ -57,7 +57,7 @@ public class BackOfficeServiceImpl implements BackOfficeService {
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.BACKOFFICE_REMOVED.name())
-                    .userNationalId(nationalId)
+                    .data(nationalId)
                     .time(Instant.now())
                     .build());
 

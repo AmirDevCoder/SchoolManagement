@@ -5,7 +5,7 @@ out/
 .idea
 
 ## Specific classes
-**/src/application/presenter/AppPresenter.java
+**/src/presentation/bootstrap/Runner.java
 
 ### Eclipse ###
 .apt_generated

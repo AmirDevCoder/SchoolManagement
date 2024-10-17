@@ -43,7 +43,7 @@ public class TeacherServiceImpl implements TeacherService {
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.TEACHER_REGISTERED.name())
-                    .userNationalId(res.getValue().getNationalId())
+                    .data(res.getValue().getNationalId())
                     .time(Instant.now())
                     .build());
             return res.map(teacher -> new TeacherDto.Response(
@@ -64,7 +64,7 @@ public class TeacherServiceImpl implements TeacherService {
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
                     .action(LogsAction.TEACHER_REMOVED.name())
-                    .userNationalId(nationalId)
+                    .data(nationalId)
                     .time(Instant.now())
                     .build());
 

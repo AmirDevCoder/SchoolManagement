@@ -33,7 +33,7 @@ public class ExamServiceImpl implements ExamService {
         var res = repo.save(req.toExam());
         if (res.isSuccess()) {
             loggerSvc.save(Logs.builder()
-                    .courseName(req.name())
+                    .data(req.name())
                     .action(LogsAction.EXAM_ADDED.name())
                     .time(Instant.now())
                     .build());
